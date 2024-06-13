@@ -1,4 +1,4 @@
-# Identity Reconciliation Backend
+# Identity Reconciliation 
 
 This project provides a backend solution for identity reconciliation. It's built with Express.js and MongoDB and provides an API endpoint to reconcile identities based on email and phone number.
 
