@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Identify Endpoint Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    input, button {
+      margin: 5px 0;
+    }
+    .response-section {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 20px;
+    }
+    .scenario-button {
+      margin: 5px;
+      padding: 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .scenario-button:hover {
+      background-color: #0056b3;
+    }
+    .scenario-info {
+      background-color: #f0f0f0;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    .scenario-description {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test Identify Endpoint</h1>
+  <form id="identify-form">
+    <label for="email">Email:</label>
+    <input type="text" id="email" name="email"><br>
+    <label for="phoneNumber">Phone Number:</label>
+    <input type="text" id="phoneNumber" name="phoneNumber"><br>
+    <button type="submit">Submit</button>
+  </form>
+  
+  <div class="response-section">
+    <h2>Response:</h2>
+    <pre id="response"></pre>
+  </div>
+
+  <h2>Test Scenarios</h2>
+  <button class="scenario-button" onclick="testScenario1()">Test Scenario 1</button>
+  <button class="scenario-button" onclick="testScenario2()">Test Scenario 2</button>
+  <button class="scenario-button" onclick="testScenario3()">Test Scenario 3</button>
+  <button class="scenario-button" onclick="testScenario4()">Test Scenario 4</button>
+  <button class="scenario-button" onclick="testScenario5()">Test Scenario 5</button>
+
+  <div class="scenario-info" id="scenario-info"></div>
+  <div class="scenario-description">
+    <h2>Scenario Descriptions</h2>
+    <p><strong>Test Scenario 1:</strong> When email "lorraine@hillvalley.edu" and phone number "123456" are submitted, the system checks if there's an existing contact. Since no match is found, a new primary contact is created with the provided email and phone number.</p>
+    <p><strong>Test Scenario 2:</strong> This scenario is similar to Scenario 1, but now the email "mcfly@hillvalley.edu" is submitted. The system creates a new primary contact since no match is found.</p>
+    <p><strong>Test Scenario 3:</strong> A request with phone number "123456" is made. If there's a contact with this phone number, the system returns the existing primary contact along with any linked contacts. Otherwise, it creates a new primary contact with the provided phone number.</p>
+    <p><strong>Test Scenario 4:</strong> A request with email "lorraine@hillvalley.edu" is made. If there's a contact with this email, the system returns the existing primary contact along with any linked contacts. Otherwise, it creates a new primary contact with the provided email.</p>
+    <p><strong>Test Scenario 5:</strong> A request with email "mcfly@hillvalley.edu" is made. If there's a contact with this email, the system returns the existing primary contact along with any linked contacts. Otherwise, it creates a new primary contact with the provided email.</p>
+  </div>
+
+  <script>
+    async function sendRequest(data) {
+      const response = await fetch('http://localhost:3000/identify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      const responseData = await response.json();
+      document.getElementById('response').innerText = JSON.stringify(responseData, null, 2);
+    }
+
+    document.getElementById('identify-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value;
+      const phoneNumber = document.getElementById('phoneNumber').value;
+      sendRequest({ email, phoneNumber });
+    });
+
+    async function testScenario1() {
+      const email = 'lorraine@hillvalley.edu';
+      const phoneNumber = '123456';
+      await sendRequest({ email, phoneNumber });
+      document.getElementById('scenario-info').innerText = `Test Scenario 1: When email "${email}" and phone number "${phoneNumber}" are submitted, the system checks if there's an existing contact. Since no match is found, a new primary contact is created with the provided email and phone number.`;
+    }
+
+    async function testScenario2() {
+      const email = 'mcfly@hillvalley.edu';
+      const phoneNumber = '123456';
+      await sendRequest({ email, phoneNumber });
+      document.getElementById('scenario-info').innerText = `Test Scenario 2: This scenario is similar to Scenario 1, but now the email "${email}" is submitted. The system creates a new primary contact since no match is found.`;
+    }
+
+    async function testScenario3() {
+      const phoneNumber = '123456';
+      await sendRequest({ email: null, phoneNumber });
+      document.getElementById('scenario-info').innerText = `Test Scenario 3: A request with phone number "${phoneNumber}" is made. If there's a contact with this phone number, the system returns the existing primary contact along with any linked contacts. Otherwise, it creates a new primary contact with the provided phone number.`;
+    }
+
+    async function testScenario4() {
+      const email = 'lorraine@hillvalley.edu';
+      await sendRequest({ email, phoneNumber: null });
+      document.getElementById('scenario-info').innerText = `Test Scenario 4: A request with email "${email}" is made. If there's a contact with this email, the system returns the existing primary contact along with any linked contacts. Otherwise, it creates a new primary contact with the provided email.`;
+    }
+
+    async function testScenario5() {
+      const email = 'mcfly@hillvalley.edu';
+      await sendRequest({ email, phoneNumber: null });
+      document.getElementById('scenario-info').innerText = `Test Scenario 5: A request with email "${email}" is made. If there's a contact with this email, the system returns the existing primary contact along with any linked contacts. Otherwise, it creates a new primary contact with the provided email.`;
+    }
+  </script>
+</body>
+</html>
